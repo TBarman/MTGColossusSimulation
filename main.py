@@ -102,7 +102,7 @@ def game(deck):
     return len(landsInPlay)
 
 
-def experiment(deckConfig, iterations=10000):
+def experiment(deckConfig, iterations=1000000):
     gameResults = []
     for i in range(iterations):
         deck = Deck(*deckConfig)
@@ -111,10 +111,10 @@ def experiment(deckConfig, iterations=10000):
     return gameResults
 
 def saveResults(data, filename='results.csv'):
-    with open(filename, 'w', newline='') as f:
+    with open(filename, 'a', newline='') as f:
         writer = csv.writer(f)
         # header row
-        writer.writerow(['cheap_reanimation', 'expensive_reanimation', 'lands_in_play'])
+        # writer.writerow(['cheap_reanimation', 'expensive_reanimation', 'lands_in_play'])
         # data rows
         for (cheap, expensive), results in data.items():
             for result in results:
@@ -122,12 +122,13 @@ def saveResults(data, filename='results.csv'):
 
 def dataProduction():
     # Want at least 1 reanimation spell, have that one be cheap which is why (1, 10) and (0, 10)
-    deckConfigs = [(i, j) for i in range(1, 10) for j in range(1, 10)]
+    deckConfigs = [(i, j) for i in range(0, 10) for j in range(0, 10) if ((i + j) > 0 and (i == 0 or j == 0))]
     data = {}
     for deckConfig in deckConfigs:
+        print(f"Computing config {deckConfig}...")
         data[deckConfig] = experiment(deckConfig)
 
     saveResults(data)
-
+#
 # dataProduction()
 # print("Done")

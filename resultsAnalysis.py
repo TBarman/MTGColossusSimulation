@@ -1,20 +1,18 @@
 import pandas as pd
+import seaborn as sns
 import matplotlib.pyplot as plt
-
-deckConfigs = [(i, j) for i in range(1, 10) for j in range(1, 10)]
 
 results = pd.read_csv("results.csv")
 
-means = [[0] * 9 for i in range(9)]
-maxConfig = (1, 1)
-max = 0
-for (cheap, expensive) in deckConfigs:
-    data = results[(results.cheap_reanimation == cheap) & (results.expensive_reanimation == expensive)]["lands_in_play"]
-    mean = data.mean()
-    if mean > max:
-        maxConfig = (cheap, expensive)
-        max = mean
 
+print(len(results))
+# Pivot into 9x9 table
+pivot = results.pivot_table(index="cheap_reanimation", columns="expensive_reanimation", values="lands_in_play", aggfunc="mean")
+# Display as heatmap
+fig, ax = plt.subplots(1, 1, figsize=(10, 8))
 
-print(f"{maxConfig}: {max}")
+sns.heatmap(pivot, annot=True, fmt=".2f", cmap="YlOrRd", ax=ax)
+ax.set_title("Lands In Play by Turn 4 (1,000,000 Samples Per Group)")
 
+plt.tight_layout()
+plt.show()
